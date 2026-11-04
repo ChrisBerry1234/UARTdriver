@@ -1,5 +1,8 @@
 #include <msp430.h>
 
+//constants
+const RETRY_COUNT = 100;
+
 //define macros 
 #define SMCLK  1000000
 #define ACLK  32768
@@ -52,4 +55,32 @@ static void uart_configure_baud(uart_clk clk_select, const uint32_t desired_baud
     UCA1MCTLW - 0xD600;
   }
 }
+//ACTION HELPERS
+static inline void uart_set_tx_byte(uint8_t byte){UCA1TXBUF = byte;//flag automatically cleared and bit is sent out once it is loaded}
+static inline uint8_t uart_get_rx_byte(void){return UCA1RXBUF;}
+static inline void uart_clear_tx_buffer_flag(void){ UCA1IFG |= UCTXIFG }
+
+//Status Checkers
+static uart_result uart_check_tx_byte(void)
+{
+  uint16_t retries = RETRY_COUNT;
+  //wait until flag is asserted under condition
+  while(!(UCA1IFG & UCTXIFG) && retries >= 0){}//keep looping until condition 1 condition is satisfied
+  if (retries == 0)
+  {
+    return UART_RESULT_ERROR_TIMEOUT; 
+  }
+  return () UART_RESULT_ERROR_CHECK_TX : UART_RESULT_OK;
+    
+  
+}
+
+
+//init
+void uart_init(void)
+{
+  
+}
+
+//PUBLIC API
 
