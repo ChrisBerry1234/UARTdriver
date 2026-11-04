@@ -6,15 +6,14 @@
 
 //enums for selecting clk
 typedef enum{
-  SMCLK,
-  ACLK
+  uart_clk_SMCLK,
+  uart_clk_ACLK,
 }uart_clk;
 
 //enum for determining error type result
 typedef enum{
 
 }uart_result;
-
 
 
 int main(void)
@@ -31,23 +30,26 @@ uart_result uart_receive_byte(const uint8_t data);
 //helper functions
 static void uart_configure_baud(uart_clk clk_select, const uint32_t desired_baud_rate)
 {
-  //configure clk 
-  UCA1CTWLW0 |= clk_select;
+  uint16_t prescaler = 0; 
   
+  //configure clk 
+  if (clk_select == uart_clk_ACLK)
+     UCA1CTWLW0 |= ACLK;
+  else 
+     UCA1CTWLW0 |= SMCLK;
+
   //determine prescalar value
-  uint16_t prescaler = (clk_select / desired_baud_rate)
+  prescaler = (uint16_t)(clk_select / desired_baud_rate);
   //set prescalar value 
   UCA1BRW = prescaler; 
 
-  //branching to determine low frequency mode
+  //branching to determine frequency mode
   if (prescaler > 16)
     //enable oversampling 
     UCA1MCTLW |= UC0S16;
   else {
     //no sampling
     UCA1MCTLW - 0xD600;
-    //UCA1MCTLW = UC0S16;
-    //
   }
 }
 
