@@ -38,7 +38,7 @@ uart_result uart_transmit_16_bit_string(const uint)
 {
   return 
 };
-uart_result uart_transmit_32_bit_string(const uint );
+uart_result uart_transmit_32_bit_string(const uint);
 
 //helper functions
 static void uart_configure_baud(uart_clk clk_select, const uint32_t desired_baud_rate)
@@ -172,4 +172,22 @@ uart_result uart_transmit_string(const uint16_t string_size, const char *string 
   }
 
    
+}
+
+uart_result uart_receive_byte(uint8_t *rx_variable)
+{
+  if (rx_variable == NULL)
+  {
+    return UART_ERROR_INVALID_PARAM;
+  }
+
+  uart_result result = uart_check_rx_byte();
+  if (result != UART_RESULT_OK)
+  {
+    return result;
+  }
+
+  *rx_variable = UCA1RXBUF;
+  return UART_RESULT; 
+  
 }
